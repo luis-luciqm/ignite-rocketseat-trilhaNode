@@ -23,6 +23,7 @@ app.post("/account", (req, res) => {
         cpf,
         statement: [],
     });
+    // testando shell
 
     return res.status(201).send();
 

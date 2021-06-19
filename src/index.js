@@ -28,14 +28,15 @@ app.post("/account", (req, res) => {
 
 });
 
-app.get("/statement/:cpf", (req, res) => { // pegando cpf via route params  
-    const { cpf } = req.params;
+app.get("/statement", (req, res) => { // pegando cpf via route params 
+    // const { cpf } = req.params; |=> seriam utilizado caso o cpf estivesse vindo por parametro na URL
+    const { cpf } = req.headers;
 
     const customer = customers.find((customer) => customer.cpf === cpf);
 
-    if(!costumer)
-        return res.status(400).json({ error: "Costumer not found." })
-        
+    if(!customer)
+        return res.status(400).json({ error: "Customer not found!" })
+
     return res.json(customer.statement);
 });
 

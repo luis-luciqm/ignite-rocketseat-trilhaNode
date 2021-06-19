@@ -23,7 +23,6 @@ app.post("/account", (req, res) => {
         cpf,
         statement: [],
     });
-    // testando shell
 
     return res.status(201).send();
 
@@ -33,6 +32,8 @@ app.get("/statement/:cpf", (req, res) => { // pegando cpf via route params
     const { cpf } = req.params;
 
     const customer = customers.find((customer) => customer.cpf === cpf);
+
+    if(!costumer) return res.json({error: "Costumer não encontrado."})
 
     return res.json(customer.statement)
 

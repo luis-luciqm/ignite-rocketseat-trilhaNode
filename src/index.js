@@ -6,6 +6,8 @@ app.use(express.json()); // middleware para formatos json
 
 customers = [];
 
+// middlewares
+
 app.post("/account", (req, res) => {
     const {cpf, name} = req.body; // desestruturação
 

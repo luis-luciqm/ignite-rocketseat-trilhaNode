@@ -1,22 +1,27 @@
-const express = require('express');
-const app = express();
-const { v4: uuidv4 } = require('uuid') // v4 gera números randomicos para o id
+const expresponses = requestuire('expresponses');
+const app = expresponses();
+const { v4: uuidv4 } = requestuire('uuid') // v4 gera números randomicos para o id
 
-app.use(express.json()); // middleware para formatos json
+app.use(expresponses.json()); // middleware para formatos json
 
 customers = [];
 
-// middlewares;
+// middlewaresponse;
+function verificaSeContaExiste(request, response, next){ // isso é um middleware
+    const { cpf } = request.headers;
 
-app.post("/account", (req, res) => {
-    const {cpf, name} = req.body; // desestruturação
+
+}
+
+app.post("/account", (request, response) => {
+    const {cpf, name} = request.body; // desestruturação
 
     const existeUmCpf = customers.some( // verifica se existe aquele cpf já cadastrado
         (customer) => customer.cpf === cpf
     );
 
     if (existeUmCpf){
-        return res.status(400).json({error: "Esse cpf já existe"});
+        return response.status(400).json({error: "Esse cpf já existe"});
     }
 
     customers.push({ // salvando no array (database fake)
@@ -26,20 +31,20 @@ app.post("/account", (req, res) => {
         statement: [],
     });
 
-    return res.status(201).send();
+    return response.status(201).send();
 
 });
 
-app.get("/statement", (req, res) => { // pegando cpf via route params 
-    // const { cpf } = req.params; |=> seriam utilizado caso o cpf estivesse vindo por parametro na URL
-    const { cpf } = req.headers;
+app.get("/statement", (request, response) => { // pegando cpf via route params 
+    // const { cpf } = request.params; |=> seriam utilizado caso o cpf estivesse vindo por parametro na URL
+    const { cpf } = request.headers;
 
     const customer = customers.find((customer) => customer.cpf === cpf);
 
     if(!customer)
-        return res.status(400).json({ error: "Customer not found!" })
+        return response.status(400).json({ error: "Customer not found!" })
 
-    return res.json(customer.statement);
+    return response.json(customer.statement);
 });
 
 app.listen(5000, () => {

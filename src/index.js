@@ -7,15 +7,18 @@ app.use(expresponses.json()); // middleware para formatos json
 customers = [];
 
 // middlewaresponse;
-function verificaSeContaExiste(request, response, next){ // isso é um middleware
+function verificaSeContaExisteCPF(request, response, next){ // isso é um middleware
     const { cpf } = request.headers;
+    const customer = customers.find((customer) => customer.cpf === cpf);
 
-
+    if(!customer)
+        return response.status(400).json({ error: "Esta conta já existe" });
+    
+    return next(); // se não der erro, irá prosseguir
 }
 
 app.post("/account", (request, response) => {
     const {cpf, name} = request.body; // desestruturação
-
     const existeUmCpf = customers.some( // verifica se existe aquele cpf já cadastrado
         (customer) => customer.cpf === cpf
     );
@@ -35,10 +38,9 @@ app.post("/account", (request, response) => {
 
 });
 
-app.get("/statement", (request, response) => { // pegando cpf via route params 
+app.get("/statement", verificaSeContaExisteCPF, (request, response) => { // pegando cpf via route params; parametro do meio é o middlware
     // const { cpf } = request.params; |=> seriam utilizado caso o cpf estivesse vindo por parametro na URL
     const { cpf } = request.headers;
-
     const customer = customers.find((customer) => customer.cpf === cpf);
 
     if(!customer)

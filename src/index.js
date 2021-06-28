@@ -38,7 +38,6 @@ app.post("/account", (request, response) => {
     });
 
     return response.status(201).send();
-
 });
 
 app.get("/statement", verificaSeContaExisteCPF, (request, response) => { // pegando cpf via route params; parametro do meio é o middlware
@@ -47,6 +46,21 @@ app.get("/statement", verificaSeContaExisteCPF, (request, response) => { // pega
 
     return response.status(200).json(customer.statement);
 });
+
+app.post("/deposit", verificaSeContaExisteCPF, (request, response) => { // o midlleware em si já verifica se existe conta, então basta fazer o metodo que faz o deposito
+    const { description, amount } = request.body;
+
+    const { customer } = request;
+
+    const statementOperation = { // operações
+        description,
+        amount,
+        created_at: new Date(),
+        type: "credit"
+    }
+    customer.statement.push(statementOperation);
+    return response.status(201).send();
+})
 
 app.listen(5000, () => {
     console.log('server is running in port 5000');

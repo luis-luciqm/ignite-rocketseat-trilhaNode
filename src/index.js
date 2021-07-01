@@ -26,7 +26,8 @@ function getBalance(statement){ // acc é o acumulador, operation vai ser a oper
             return acc + operation.amount; // retorna o acumulador + valor da minha operação
         }
         return acc - operation.amount; // se for uma operação de debito
-    })
+    }, 0); // 0 define o valor inicial de onde o reduce irá iniciar
+    return balance
 }
 
 app.post("/account", (request, response) => {
@@ -75,9 +76,11 @@ app.post("/saque", verificaSeContaExisteCPF, (request, response) => {
     const { amount } = request.body; 
     const { customer } = request; // pegando as informações de quanto existe na conta
 
-    if(amount <= customer.amount)
-        return response.status(400).json({ "error": "Saldo " })
-
+    const balance = getBalance(customer.statement);
+    if(balance < amount) { // verificando se o saldo é suficiente para realizar saque 
+        return response.status(400).json({ error: "Saldo Insuficiente" });
+        // rever aula criando saque novamente
+    }
 })
 
 app.listen(5000, () => {

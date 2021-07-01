@@ -20,6 +20,15 @@ function verificaSeContaExisteCPF(request, response, next){ // isso é um middle
     return next(); // se não der erro, irá prosseguir
 }
 
+function getBalance(statement){ // acc é o acumulador, operation vai ser a operação
+    const balance = statement.reduce((acc, operation) => {
+        if(operation.type === 'credit'){
+            return acc + operation.amount; // retorna o acumulador + valor da minha operação
+        }
+        return acc - operation.amount; // se for uma operação de debito
+    })
+}
+
 app.post("/account", (request, response) => {
     const {cpf, name} = request.body; // desestruturação
     const existeUmCpf = customers.some( // verifica se existe aquele cpf já cadastrado
@@ -48,7 +57,7 @@ app.get("/statement", verificaSeContaExisteCPF, (request, response) => { // pega
 });
 
 app.post("/deposit", verificaSeContaExisteCPF, (request, response) => { // o midlleware em si já verifica se existe conta, então basta fazer o metodo que faz o deposito
-    const { description, amount } = request.body;
+    const { description, amount } = request.body; // pega os valores passados no insomnia, no body
 
     const { customer } = request;
 
@@ -60,6 +69,15 @@ app.post("/deposit", verificaSeContaExisteCPF, (request, response) => { // o mid
     }
     customer.statement.push(statementOperation);
     return response.status(201).send();
+})
+
+app.post("/saque", verificaSeContaExisteCPF, (request, response) => {
+    const { amount } = request.body; 
+    const { customer } = request; // pegando as informações de quanto existe na conta
+
+    if(amount <= customer.amount)
+        return response.status(400).json({ "error": "Saldo " })
+
 })
 
 app.listen(5000, () => {
